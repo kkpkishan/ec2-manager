@@ -1,15 +1,44 @@
-<h2>EC2 Activity Logs</h2>
-<table border="1">
-  <tr><th>Time</th><th>IP</th><th>User Agent</th><th>Instance ID</th><th>Action</th><th>Previous Status</th></tr>
-  {% for log in logs %}
-  <tr>
-    <td>{{ log.time }}</td>
-    <td>{{ log.ip }}</td>
-    <td>{{ log.user_agent }}</td>
-    <td>{{ log.instance_id }}</td>
-    <td>{{ log.action }}</td>
-    <td>{{ log.previous_status }}</td>
-  </tr>
-  {% endfor %}
-</table>
-<a href="/dashboard">Back</a>
+{% extends "layout.html" %}{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+
+<div class="container">
+  <div class="card">
+    <h2 style="margin-top:0">Activity Logs</h2>
+
+    {% if logs %}
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Time (UTC)</th><th>IP</th><th>User-Agent</th>
+            <th>Instance</th><th>Action</th><th>Prev&nbsp;State</th>
+            <th>Curr&nbsp;State</th><th>Success</th><th>Error</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for l in logs %}
+          <tr>
+            <td>{{ l.time }}</td>
+            <td>{{ l.ip }}</td>
+            <td style="white-space:normal">{{ l.user_agent }}</td>
+            <td>{{ l.instance_id }}</td>
+            <td>{{ l.action }}</td>
+            <td>{{ l.previous_status }}</td>
+            <td>{{ l.current_status }}</td>
+            <td>{{ '✔' if l.success else '✖' }}</td>
+            <td style="white-space:normal">{{ l.error_message }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <p>No log entries yet.</p>
+    {% endif %}
+
+    <p style="margin-top:1rem">
+      <a class="button-link" href="{{ url_for('dashboard') }}">← Back to Dashboard</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

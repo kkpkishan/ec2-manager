@@ -1,23 +1,61 @@
-<h2>EC2 Dashboard</h2>
-<table border="1">
-  <tr><th>Name</th><th>ID</th><th>Type</th><th>Status</th><th>Action</th></tr>
-  {% for i in instances %}
-  <tr>
-    <td>{{ i.name }}</td>
-    <td>{{ i.id }}</td>
-    <td>{{ i.type }}</td>
-    <td>{{ i.status }}</td>
-    <td>
-      <form method="POST" action="/action">
-        <input type="hidden" name="instance_id" value="{{ i.id }}">
-        {% if i.status == 'running' %}
-        <button name="action" value="stop">Stop</button>
-        {% else %}
-        <button name="action" value="start">Start</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>EC2 Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+  <script defer src="{{ url_for('static', filename='main.js') }}"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2>EC2 Dashboard <small>({{ total }} instances)</small></h2>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for cat,msg in messages %}
+            <p class="{{ cat }}">{{ msg }}</p>
+          {% endfor %}
         {% endif %}
-      </form>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
-<a href="/logs">View Logs</a> | <a href="/logout">Logout</a>
+      {% endwith %}
+
+      <input id="searchBox" type="search" placeholder="🔍 Filter…" style="margin-bottom:1rem;padding:.4rem .6rem;width:200px">
+
+      <div style="overflow-x:auto">
+        <table data-sortable>
+          <thead>
+            <tr><th>Name</th><th>ID</th><th>Type</th><th>Status</th><th>Action</th></tr>
+          </thead>
+          <tbody>
+          {% for i in instances %}
+            <tr>
+              <td>{{ i.name }}</td>
+              <td>{{ i.id }}</td>
+              <td>{{ i.type }}</td>
+              <td class="status {{ i.status }}">{{ i.status }}</td>
+              <td>
+                <form method="post" action="{{ url_for('action') }}" class="needs-ip" style="margin:0">
+                  <input type="hidden" name="instance_id" value="{{ i.id }}">
+                  {% if i.status == 'running' %}
+                    <button name="action" value="stop">Stop</button>
+                  {% elif i.status == 'stopped' %}
+                    <button name="action" value="start">Start</button>
+                  {% else %}
+                    <button disabled>{{ i.status|title }}</button>
+                  {% endif %}
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin-top:1rem">
+        <a class="button-link" href="{{ url_for('view_logs') }}">View Logs</a>
+        <a class="button-link" href="{{ url_for('logout') }}">Logout</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<h2>EC2 Activity Logs</h2>
+<table border="1">
+  <tr><th>Time</th><th>IP</th><th>User Agent</th><th>Instance ID</th><th>Action</th><th>Previous Status</th></tr>
+  {% for log in logs %}
+  <tr>
+    <td>{{ log.time }}</td>
+    <td>{{ log.ip }}</td>
+    <td>{{ log.user_agent }}</td>
+    <td>{{ log.instance_id }}</td>
+    <td>{{ log.action }}</td>
+    <td>{{ log.previous_status }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<a href="/dashboard">Back</a>

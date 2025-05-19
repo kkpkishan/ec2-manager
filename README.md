@@ -23,13 +23,17 @@ ec2-manager/
 │
 ├── app.py                    # Flask backend
 ├── .env                      # Username and password
+├── Dockerfile                # Docker build file
+├── docker-compose.yml        # Docker Compose setup
 ├── templates/
 │   ├── login.html            # Login page
 │   ├── dashboard.html        # EC2 control panel
 │   └── logs.html             # Logs viewer
+├── static/                   # CSS, JS
+│   ├── main.css
+│   └── main.js
 ├── logs/
 │   └── activity.jsonl        # Log file
-├── static/                   # Optional: CSS, JS
 └── requirements.txt
 
 ````
@@ -45,20 +49,7 @@ git clone https://github.com/kkpkishan/ec2-manager.git
 cd ec2-manager
 ````
 
-### 2. 🐍 Create a virtual environment
-
-```bash
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-### 3. 📦 Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. 🧪 Create `.env` file
+### 2. 🧪 Create `.env` file
 
 Create a `.env` file in the root folder:
 
@@ -71,6 +62,10 @@ Add your environment variables:
 ```
 USERNAME=admin
 PASSWORD_HASH=your_hashed_password_here
+AWS_REGION=ap-south-1
+FLASK_SECRET_KEY=your_secret_key
+FLASK_DEBUG=1
+PORT=5000
 ```
 
 ---
@@ -89,13 +84,42 @@ Then copy the hash into `.env` as `PASSWORD_HASH`.
 
 ---
 
-## 🧪 Run the App
+## 🧪 Run the App (Locally with Python)
 
 ```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 python app.py
 ```
 
 Visit `http://localhost:5000` in your browser.
+
+---
+
+## 🐳 Run the App in Docker (Recommended for EC2 with IAM)
+
+### 1. 🏗️ Build the Docker Image
+
+```bash
+docker-compose build
+```
+
+### 2. 🚀 Run with IAM Role Using `iam-docker-run`
+
+Install [`iam-docker-run`](https://github.com/99designs/iam-docker-run) if not already:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/99designs/iam-docker-run/master/install.sh | bash
+```
+
+Then start your app:
+
+```bash
+iam-docker-run docker-compose up -d
+```
+
+> This will ensure the container inherits IAM permissions from the EC2 instance role.
 
 ---
 

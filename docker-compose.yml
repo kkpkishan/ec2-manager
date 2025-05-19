@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  ec2-dashboard:
+    build: .
+    container_name: ec2-dashboard
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./logs:/app/logs
+      - ./static:/app/static
+      - ./templates:/app/templates
+      - ./.env:/app/.env:ro
+    environment:
+      - AWS_REGION=ap-south-1
+    restart: unless-stopped
